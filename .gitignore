@@ -409,4 +409,5 @@ ASALocalRun/
 .env*
 !.env.project
 !.env.vault
+**/appsettings.local.json
 
