@@ -11,8 +11,7 @@ using UserSystem.Models;
 var builder = WebApplication.CreateBuilder(args);
 var config = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-    .AddJsonFile($"appsettings.Development.json", optional: true)
-    .AddJsonFile($"appsettings.Production.json", optional: true)
+    .AddJsonFile($"appsettings.local.json", optional: false)
     .AddEnvironmentVariables()
     .Build();
 var appSettings = config.GetSection("AppSettings").Get<AppSettings>();
