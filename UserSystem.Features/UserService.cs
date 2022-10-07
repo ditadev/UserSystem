@@ -11,13 +11,13 @@ namespace UserSystem.Features;
 
 public class UserService : IUserService
 {
-    private readonly IConfiguration _configuration;
+    private readonly AppSettings _appSettings;
     private readonly DataContext _dataContext;
 
-    public UserService(DataContext dataContext, IConfiguration configuration)
+    public UserService(DataContext dataContext, AppSettings appSettings)
     {
         _dataContext = dataContext;
-        _configuration = configuration;
+        _appSettings = appSettings;
     }
 
     public async Task<string> CreatePasswordHash(string password)
@@ -27,12 +27,8 @@ public class UserService : IUserService
 
     public Task<string> CreateJwt(User user)
     {
-        var claims = new List<Claim>
-        {
-            new("sub", user.Id.ToString())
-        };
-        var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+        var claims = new List<Claim> { new("sub", user.Id.ToString()) };
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.JwtSecret));
         var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
         var token = new JwtSecurityToken
         (
@@ -44,13 +40,24 @@ public class UserService : IUserService
         return Task.FromResult(new JwtSecurityTokenHandler().WriteToken(token));
     }
 
-    public Task<bool> VerifyPasswordHash(string password, string passwordHash)
+    public async Task CreateUser(User user)
     {
-        return Task.FromResult((BCrypt.Net.BCrypt.Verify(password, passwordHash)));
+        _dataContext.Users.Add(user);
+        await _dataContext.SaveChangesAsync();
     }
 
-    public async Task<User?> GetUserById(long id)
+    public Task<bool> VerifyPassword(User user, string password)
     {
-        return await _dataContext.Users.SingleOrDefaultAsync(u => u.Id == id);
+        return Task.FromResult(BCrypt.Net.BCrypt.Verify(password, user.PasswordHash));
+    }
+
+    public Task<User?> GetUserById(long id)
+    {
+        return _dataContext.Users.SingleOrDefaultAsync(u => u.Id == id);
+    }
+
+    public Task<User?> GetUserByEmailAddress(string emailAddress)
+    {
+        return _dataContext.Users.SingleOrDefaultAsync(u => u.EmailAddress == emailAddress);
     }
 }

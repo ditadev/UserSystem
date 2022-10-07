@@ -16,6 +16,7 @@ var config = new ConfigurationBuilder()
     .Build();
 var appSettings = config.GetSection("AppSettings").Get<AppSettings>();
 
+builder.Services.AddSingleton(appSettings);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContextFactory<DataContext>(options =>
@@ -43,7 +44,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-                .GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
+                .GetBytes(appSettings.JwtSecret)),
             ValidateIssuer = false,
             ValidateAudience = false
         };
