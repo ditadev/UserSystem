@@ -11,13 +11,13 @@ namespace UserSystem.Features;
 
 public class UserService : IUserService
 {
-    private readonly IConfiguration _configuration;
+    private readonly AppSettings _appSettings;
     private readonly DataContext _dataContext;
 
-    public UserService(DataContext dataContext, IConfiguration configuration)
+    public UserService(DataContext dataContext, AppSettings appSettings)
     {
         _dataContext = dataContext;
-        _configuration = configuration;
+        _appSettings = appSettings;
     }
 
     public async Task<string> CreatePasswordHash(string password)
@@ -32,7 +32,7 @@ public class UserService : IUserService
             new("sub", user.Id.ToString())
         };
         var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+            Encoding.UTF8.GetBytes(_appSettings.JwtSecret));
         var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
         var token = new JwtSecurityToken
         (
