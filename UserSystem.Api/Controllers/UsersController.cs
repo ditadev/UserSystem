@@ -44,10 +44,7 @@ public class UsersController : ControllerBase
     {
         var user = await _userService.GetUserByEmail(request.Email);
 
-        if (user == null) return BadRequest("User not found :(");
-
-        if (!await _userService.VerifyPassword(request.Password, user))
-            return BadRequest("Incorrect Username/Password :(");
+        if (user == null || !await _userService.VerifyPassword(request.Password, user)) return BadRequest("Incorrect Username/Password :(");
 
         return Ok(new JwtDto
         {
