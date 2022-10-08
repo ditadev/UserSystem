@@ -10,5 +10,5 @@ A minimalist user system with registration and sign in.
     cp src/UserSystem.Api/appsettings.json src/UserSystem.Api/appsettings.local.json
     ```
 
-2. Start API service and navigate to Swagger UI: [http://localhost:5254/swagger/index.html](http://localhost:5254/swagger/index.html)
+2. Start API service and navigate to Swagger UI: [http://localhost:5000/swagger/index.html](http://localhost:5000/swagger/index.html)
 

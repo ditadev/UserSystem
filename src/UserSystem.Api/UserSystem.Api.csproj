@@ -17,7 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\UserSystem.Features\UserSystem.Features.csproj" />
+      <ProjectReference Include="..\UserSystem.Features\UserSystem.Features.csproj" />
     </ItemGroup>
 
 </Project>
