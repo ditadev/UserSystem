@@ -44,13 +44,25 @@ public class UserService : IUserService
         return Task.FromResult(new JwtSecurityTokenHandler().WriteToken(token));
     }
 
-    public Task<bool> VerifyPasswordHash(string password, string passwordHash)
+    public Task<bool> VerifyPassword(string password, User user)
     {
-        return Task.FromResult((BCrypt.Net.BCrypt.Verify(password, passwordHash)));
+        return Task.FromResult((BCrypt.Net.BCrypt.Verify(password, user.PasswordHash)));
     }
 
     public async Task<User?> GetUserById(long id)
     {
         return await _dataContext.Users.SingleOrDefaultAsync(u => u.Id == id);
+    }
+
+    public async Task<User?> GetUserByEmail(string email)
+    {
+        return await _dataContext.Users.SingleOrDefaultAsync(u => u.EmailAddress==email);
+    }
+
+    public async Task<User?> CreateUser(User user)
+    {
+        _dataContext.Users.Add(user);
+        await _dataContext.SaveChangesAsync();
+        return user;
     }
 }

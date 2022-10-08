@@ -11,46 +11,42 @@ namespace UserSystem.Api.Controllers;
 [ApiController]
 public class UsersController : ControllerBase
 {
-    private readonly DataContext _dataContext;
     private readonly IUserService _userService;
 
-    public UsersController(DataContext dataContext, IUserService userService)
+    public UsersController(IUserService userService)
     {
-        _dataContext = dataContext;
         _userService = userService;
     }
 
     [HttpPost]
     public async Task<ActionResult> Register(RegisterUserRequest request)
     {
-        var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-        var passwordHash = await _userService.CreatePasswordHash(request.Password);
-
+        var user = await _userService.GetUserByEmail(request.Email);
+        
         if (user != null) return BadRequest("User Already Exist :(");
-
+        
+        var passwordHash = await _userService.CreatePasswordHash(request.Password);
         var newUser = new User
         {
-            Email = request.Email,
+            EmailAddress = request.Email,
             FirstName = request.FirstName,
             LastName = request.LastName,
-            PhoneNumber = request.Phone,
+            PhoneNumber = request.PhoneNumber,
             PasswordHash = passwordHash
         };
 
-        _dataContext.Users.Add(newUser);
-        await _dataContext.SaveChangesAsync();
-
+        await _userService.CreateUser(newUser);
         return Ok(" Successfully Created :)");
     }
 
     [HttpPost]
     public async Task<ActionResult<JwtDto>> Login(LoginUserRequest request)
     {
-        var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+        var user = await _userService.GetUserByEmail(request.Email);
 
         if (user == null) return BadRequest("User not found :(");
 
-        if (!await _userService.VerifyPasswordHash(request.Password, user.PasswordHash))
+        if (!await _userService.VerifyPassword(request.Password, user))
             return BadRequest("Incorrect Username/Password :(");
 
         return Ok(new JwtDto
