@@ -9,7 +9,7 @@ namespace UserSystem.Api.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class UsersController : ControllerBase
+public class UsersController : AbstractController
 {
     private readonly IUserService _userService;
 
@@ -33,7 +33,8 @@ public class UsersController : ControllerBase
             FirstName = request.FirstName,
             LastName = request.LastName,
             PhoneNumber = request.PhoneNumber,
-            PasswordHash = passwordHash
+            PasswordHash = passwordHash,
+            Roles = new List<Role> { Role.User }
         });
 
         return Ok("Successfully Created :)");

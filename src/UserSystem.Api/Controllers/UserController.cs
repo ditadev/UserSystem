@@ -1,6 +1,6 @@
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UserSystem.Api.Attributes;
 using UserSystem.Features;
 using UserSystem.Models;
 
@@ -8,8 +8,8 @@ namespace UserSystem.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
-public class UserController : ControllerBase
+[Microsoft.AspNetCore.Authorization.Authorize]
+public class UserController : AbstractController
 {
     private readonly IUserService _userService;
 
@@ -19,9 +19,10 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Role.User)]
     public async Task<ActionResult<User>> Get()
     {
-        var userId = long.Parse(User.Claims.First(i => i.Type == ClaimTypes.NameIdentifier).Value);
+        var userId = GetContextUserId();
         var user = await _userService.GetUserById(userId);
         
         if (user == null) return BadRequest("User Not Found :(");

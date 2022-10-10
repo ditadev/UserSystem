@@ -27,17 +27,19 @@ public class UserService : IUserService
 
     public Task<string> CreateJwt(User user)
     {
-        var claims = new List<Claim> { new("sub", user.Id.ToString()) };
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.JwtSecret));
         var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-        var token = new JwtSecurityToken
-        (
-            claims: claims,
-            expires: DateTime.Now.AddDays(1),
-            signingCredentials: cred
-        );
+        var claims = new List<Claim> { new("sub", user.Id.ToString()), new("role", "Default") };
+        
+        claims.AddRange(user.Roles.Select(role => new Claim("role", role.ToString())));
 
-        return Task.FromResult(new JwtSecurityTokenHandler().WriteToken(token));
+        return Task.FromResult(new JwtSecurityTokenHandler().WriteToken(
+            new JwtSecurityToken
+            (
+                claims: claims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: cred
+            )));
     }
 
     public async Task CreateUser(User user)
