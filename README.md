@@ -1,6 +1,6 @@
 # UserSystem
 
-A minimalist user system with registration and sign in.
+A minimalist user system with registration, sign in and role based authentication.
 
 ## Usage
 
