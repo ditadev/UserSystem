@@ -25,7 +25,7 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
         if (allowAnonymous) return;
 
         var parsedRoles = context.HttpContext.User.Claims
-            .Where(x => x.Type == ClaimTypes.Role)
+            .Where(x => x.Type == "role")
             .Select(y => Enum.Parse<UserRole>(y.Value))
             .ToList();
 
