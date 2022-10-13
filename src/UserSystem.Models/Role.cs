@@ -1,8 +1,10 @@
+using System.Text.Json.Serialization;
+using UserSystem.Models.Enums;
+
 namespace UserSystem.Models;
 
-public enum Role
+public class Role
 {
-    Default,
-    User,
-    Administrator
+    public UserRole Id { get; set; }
+    [JsonIgnore] public List<User> Users { get; set; }
 }

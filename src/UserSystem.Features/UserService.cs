@@ -2,10 +2,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using UserService.Persistence;
 using UserSystem.Models;
+using UserSystem.Models.Enums;
 
 namespace UserSystem.Features;
 
@@ -29,9 +29,9 @@ public class UserService : IUserService
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.JwtSecret));
         var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-        var claims = new List<Claim> { new("sub", user.Id.ToString()), new("role", "Default") };
-        
-        claims.AddRange(user.Roles.Select(role => new Claim("role", role.ToString())));
+        var claims = new List<Claim> { new("sub", user.Id.ToString()), new("role", UserRole.Default.ToString()) };
+
+        claims.AddRange(user.Roles.Select(role => new Claim("role", role.Id.ToString())));
 
         return Task.FromResult(new JwtSecurityTokenHandler().WriteToken(
             new JwtSecurityToken
@@ -44,6 +44,7 @@ public class UserService : IUserService
 
     public async Task CreateUser(User user)
     {
+        user.Roles = new List<Role> { await _dataContext.Roles.SingleAsync(x => x.Id == UserRole.User) };
         _dataContext.Users.Add(user);
         await _dataContext.SaveChangesAsync();
     }
@@ -55,11 +56,11 @@ public class UserService : IUserService
 
     public Task<User?> GetUserById(long id)
     {
-        return _dataContext.Users.SingleOrDefaultAsync(u => u.Id == id);
+        return _dataContext.Users.Include(x => x.Roles).SingleOrDefaultAsync(u => u.Id == id);
     }
 
     public Task<User?> GetUserByEmailAddress(string emailAddress)
     {
-        return _dataContext.Users.SingleOrDefaultAsync(u => u.EmailAddress == emailAddress);
+        return _dataContext.Users.Include(x => x.Roles).SingleOrDefaultAsync(u => u.EmailAddress == emailAddress);
     }
 }

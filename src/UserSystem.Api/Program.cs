@@ -10,18 +10,17 @@ using UserSystem.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-    .AddJsonFile($"appsettings.local.json", optional: false)
+    .AddJsonFile("appsettings.json", true, true)
+    .AddJsonFile("appsettings.local.json", false)
     .AddEnvironmentVariables()
     .Build();
 var appSettings = config.GetSection("AppSettings").Get<AppSettings>();
-
 builder.Services.AddSingleton(appSettings);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContextFactory<DataContext>(options =>
 {
-    options.UseNpgsql(appSettings.PostgresDsn);
+    options.UseMySql(appSettings.MySqlDsn, ServerVersion.AutoDetect(appSettings.MySqlDsn));
 });
 builder.Services.AddScoped<IUserService, UserSystem.Features.UserService>();
 

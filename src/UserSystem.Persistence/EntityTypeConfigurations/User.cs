@@ -14,6 +14,5 @@ public class User : IEntityTypeConfiguration<UserSystem.Models.User>
         builder.Property(x => x.PhoneNumber).IsRequired(false);
         builder.Property(x => x.FirstName).IsRequired();
         builder.Property(x => x.LastName).IsRequired(false);
-        builder.Property(x => x.Roles).IsRequired();
     }
 }

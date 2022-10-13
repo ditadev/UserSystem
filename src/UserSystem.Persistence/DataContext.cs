@@ -15,9 +15,11 @@ public class DataContext : DbContext
     }
 
     public DbSet<User> Users { get; set; }
+    public DbSet<Role> Roles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(User).Assembly);
+        modelBuilder.ApplyConfiguration(new EntityTypeConfigurations.User());
+        modelBuilder.ApplyConfiguration(new EntityTypeConfigurations.Role());
     }
 }

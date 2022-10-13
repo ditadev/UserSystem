@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using UserService.Persistence;
 using UserSystem.Api.Dtos;
 using UserSystem.Features;
 using UserSystem.Models;
@@ -24,7 +22,7 @@ public class UsersController : AbstractController
         var user = await _userService.GetUserByEmailAddress(request.EmailAddress);
 
         if (user != null) return BadRequest("User Already Exists :(");
-        
+
         var passwordHash = await _userService.CreatePasswordHash(request.Password);
 
         await _userService.CreateUser(new User
@@ -33,8 +31,7 @@ public class UsersController : AbstractController
             FirstName = request.FirstName,
             LastName = request.LastName,
             PhoneNumber = request.PhoneNumber,
-            PasswordHash = passwordHash,
-            Roles = new List<Role> { Role.User }
+            PasswordHash = passwordHash
         });
 
         return Ok("Successfully Created :)");
@@ -44,7 +41,7 @@ public class UsersController : AbstractController
     public async Task<ActionResult<JwtDto>> Login(LoginUserRequest request)
     {
         var user = await _userService.GetUserByEmailAddress(request.EmailAddress);
-        
+
         if (user == null || !await _userService.VerifyPassword(user, request.Password))
             return BadRequest("Incorrect Username/Password :(");
 
