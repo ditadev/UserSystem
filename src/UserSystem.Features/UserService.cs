@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -42,11 +43,33 @@ public class UserService : IUserService
             )));
     }
 
+    public Task<string> CreateRandomToken()
+    {
+        
+        return  Task.FromResult(new Random().Next(0, 1000000).ToString("D6"));
+    }
+
     public async Task CreateUser(User user)
     {
         user.Roles = new List<Role> { await _dataContext.Roles.SingleAsync(x => x.Id == UserRole.User) };
         _dataContext.Users.Add(user);
         await _dataContext.SaveChangesAsync();
+    }
+
+    public async Task<User> UpdateUser(User user)
+    {
+         _dataContext.Users.Update(user);
+         await _dataContext.SaveChangesAsync();
+         return user;
+    }
+
+    public async Task VerifyUser(string emailAddress, string token)
+    {
+        var user = await _dataContext.Users.SingleOrDefaultAsync(x => x.EmailAddress == emailAddress);
+        if (user != null) user.VerifiedAt = DateTime.UtcNow;
+        
+        await _dataContext.SaveChangesAsync();
+        
     }
 
     public Task<bool> VerifyPassword(User user, string password)

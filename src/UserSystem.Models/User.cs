@@ -11,4 +11,5 @@ public class User
     public string PhoneNumber { get; set; }
     public List<Role> Roles { get; set; }
     [JsonIgnore] public string PasswordHash { get; set; }
+    [JsonIgnore] public DateTime? VerifiedAt { get; set; }
 }
