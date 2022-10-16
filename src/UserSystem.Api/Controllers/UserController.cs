@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserSystem.Api.Attributes;
 using UserSystem.Features;
@@ -9,7 +8,7 @@ namespace UserSystem.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Attributes.Authorize(UserRole.Default)]
+[Authorize(UserRole.Default)]
 public class UserController : AbstractController
 {
     private readonly IUserService _userService;
@@ -20,7 +19,7 @@ public class UserController : AbstractController
     }
 
     [HttpGet]
-    [Attributes.Authorize(UserRole.User)]
+    [Authorize(UserRole.User)]
     public async Task<ActionResult<User>> Get()
     {
         var userId = GetContextUserId();
@@ -30,5 +29,4 @@ public class UserController : AbstractController
 
         return Ok(user);
     }
-    
 }
