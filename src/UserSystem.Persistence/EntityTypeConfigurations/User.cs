@@ -12,6 +12,7 @@ public class User : IEntityTypeConfiguration<UserSystem.Models.User>
         builder.HasIndex(x => x.EmailAddress).IsUnique();
         builder.Property(x => x.PasswordHash).IsRequired();
         builder.Property(x => x.PhoneNumber).IsRequired(false);
+        builder.HasIndex(x => x.PhoneNumber).IsUnique();
         builder.Property(x => x.FirstName).IsRequired();
         builder.Property(x => x.LastName).IsRequired(false);
     }

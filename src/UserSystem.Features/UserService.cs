@@ -13,7 +13,7 @@ namespace UserSystem.Features;
 
 public class UserService : IUserService
 {
-    private static readonly Random Getrandom = new();
+    private static readonly Random GenerateRandomToken = new();
     private readonly AppSettings _appSettings;
     private readonly IDatabase _database;
     private readonly DataContext _dataContext;
@@ -55,15 +55,15 @@ public class UserService : IUserService
 
     public string CreateRandomToken()
     {
-        int GetRandomNumber(int min, int max)
+        int CreateRandomNumber(int min, int max)
         {
-            lock (Getrandom)
+            lock (GenerateRandomToken)
             {
-                return Getrandom.Next(min, max);
+                return GenerateRandomToken.Next(min, max);
             }
         }
 
-        return GetRandomNumber(0, 1000000).ToString("D6");
+        return CreateRandomNumber(0, 1000000).ToString("D6");
     }
 
     public async Task CreateUser(User user)
