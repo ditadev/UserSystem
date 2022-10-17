@@ -1,8 +1,12 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using StackExchange.Redis;
+using UserSystem.Api.Attributes;
 using UserSystem.Api.Dtos;
 using UserSystem.Features;
 using UserSystem.Models;
+using UserSystem.Models.Enums;
+using UserSystem.Models.Helper;
 
 namespace UserSystem.Api.Controllers;
 
@@ -46,10 +50,10 @@ public class UsersController : AbstractController
         if (user == null || !await _userService.VerifyPassword(user, request.Password))
             return BadRequest("Incorrect Username/Password :(");
 
-        return Ok(new JwtDto
+        return Ok(new JwtDto(AppFaultCode.Success, "Success", new JwtDto.Data
         {
             AccessToken = await _userService.CreateJwt(user)
-        });
+        }));
     }
 
     [HttpPost]
@@ -76,5 +80,21 @@ public class UsersController : AbstractController
         if (await _userService.ResetPassword(request.emailAddress, request.Token, request.Password) == false)
             return BadRequest("Invalid OTP :(");
         return Ok("Password successfully reset :)");
+    }
+
+    [HttpGet]
+    [Authorize(UserRole.Administrator)]
+    public async Task<ActionResult<UserListDto>> GetUsers([FromQuery]PageParameters pageParameters)
+    {
+        var users = await _userService.GetAllUsers(pageParameters);
+        var userList = new UserListDto(AppFaultCode.Success, "Success", users, new ()
+        {
+            CurrentPage = users.CurrentPage,
+            HasNext = users.HasNext,
+            HasPrevious = users.HasPrevious,
+            TotalCount = users.TotalCount,
+            TotalPages = users.TotalPages,
+        });
+        return Ok(userList);
     }
 }

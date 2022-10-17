@@ -31,20 +31,4 @@ public class UserController : AbstractController
     
         return Ok(user);
     }
-
-    [HttpGet]
-    [Authorize(UserRole.Administrator)]
-    public async Task<ActionResult<List<User>>> GetUsers([FromQuery]PageParameters pageParameters)
-    {
-        var users = await _userService.GetAllUsers(pageParameters);
-        var pageInformation = new
-        {
-            users.CurrentPage,
-            users.TotalCount,
-            users.HasNext,
-            users.HasPrevious
-        };
-        Response.Headers.Add("Page-Information", JsonSerializer.Serialize(pageInformation));
-        return Ok(users);
-    }
 }
