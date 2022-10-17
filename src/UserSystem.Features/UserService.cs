@@ -7,6 +7,7 @@ using StackExchange.Redis;
 using UserService.Persistence;
 using UserSystem.Models;
 using UserSystem.Models.Enums;
+using UserSystem.Models.Helper;
 using Role = UserSystem.Models.Role;
 
 namespace UserSystem.Features;
@@ -140,6 +141,14 @@ public class UserService : IUserService
     public Task<User?> GetUserById(long id)
     {
         return _dataContext.Users.Include(x => x.Roles).SingleOrDefaultAsync(u => u.Id == id);
+    }
+
+    public async Task<PagedList<User>> GetAllUsers(PageParameters pageParameters)
+    {
+        return await PagedList<User>.ToPagedList(await _dataContext.Users
+            .Include(x => x.Roles)
+            .OrderBy(x => x.Id)
+            .ToListAsync(),pageParameters.PageNumber,pageParameters.PageSize);
     }
 
     public Task<User?> GetUserByEmailAddress(string emailAddress)

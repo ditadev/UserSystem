@@ -1,4 +1,5 @@
 using UserSystem.Models;
+using UserSystem.Models.Helper;
 
 namespace UserSystem.Features;
 
@@ -14,5 +15,6 @@ public interface IUserService
     public Task<bool> ForgotPassword(string emailAddress);
     public Task<bool> ResetPassword(string emailAddress, string token, string password);
     public Task<User?> GetUserById(long id);
+    public Task<PagedList<User>> GetAllUsers(PageParameters pageParameters);
     public Task<User?> GetUserByEmailAddress(string emailAddress);
 }
