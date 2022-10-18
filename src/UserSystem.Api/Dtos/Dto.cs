@@ -1,6 +1,6 @@
 namespace UserSystem.Api.Dtos;
 
-public abstract class Dto<TResultDto>
+public abstract class Dto<TResultDto> where TResultDto : class
 {
     public AppFaultCode Code { get; set; }
     public string Message { get; set; }

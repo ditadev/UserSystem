@@ -1,6 +1,6 @@
 namespace UserSystem.Api.Dtos;
 
-public abstract class PaginatedDto<TResultDto> : Dto<TResultDto>
+public abstract class PaginatedDto<TResultDto> : Dto<TResultDto> where TResultDto: class
 {
     public PageInformation PageInfo { get; set; }
 

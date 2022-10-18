@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using UserSystem.Api.Attributes;
+using UserSystem.Api.Dtos;
 using UserSystem.Features;
 using UserSystem.Models;
 using UserSystem.Models.Enums;
@@ -22,13 +23,13 @@ public class UserController : AbstractController
 
     [HttpGet]
     [Authorize(UserRole.User)]
-    public async Task<ActionResult<User>> Get()
+    public async Task<ActionResult<UserDto>> Get()
     {
         var userId = GetContextUserId();
         var user = await _userService.GetUserById(userId);
     
         if (user == null) return BadRequest("User Not Found :(");
     
-        return Ok(user);
+        return Ok(new UserDto(AppFaultCode.Success,"Success",user));
     }
 }
