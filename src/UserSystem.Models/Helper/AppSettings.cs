@@ -1,4 +1,4 @@
-namespace UserSystem.Models;
+namespace UserSystem.Models.Helper;
 
 public class AppSettings
 {

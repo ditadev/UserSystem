@@ -14,7 +14,8 @@ public interface IUserService
     public Task<bool> VerifyPassword(User user, string password);
     public Task<bool> ForgotPassword(string emailAddress);
     public Task<bool> ResetPassword(string emailAddress, string token, string password);
-    public Task<User?> GetUserById(long id);
+    public Task<User?> GetUserById(ulong id);
     public Task<PagedList<User>> GetAllUsers(PageParameters pageParameters);
     public Task<User?> GetUserByEmailAddress(string emailAddress);
+    public Task<User?> GetUserByPhoneNumber(string phoneNumber);
 }

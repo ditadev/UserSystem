@@ -1,31 +1,32 @@
 namespace UserSystem.Models.Helper;
 
-public class PagedList<T>:List<T>
-{
-    public int CurrentPage { get; private set; }
-    public int TotalPages { get; private set; }
-    public int PageSize { get; private set; }
-    public int TotalCount { get; private set; }
-    public bool HasPrevious => CurrentPage > 1;
-    public bool HasNext => CurrentPage < TotalPages;
 
-    public PagedList(List<T> items, int count, int pageNumber, int pageSize)
+public class PagedList<T> : List<T>
+{
+    public PagedList(List<T> items, ulong count, ulong pageNumber, ulong pageSize)
     {
         TotalCount = count;
         PageSize = pageSize;
         CurrentPage = pageNumber;
-        TotalPages= (int)Math.Ceiling(count / (double)pageSize);
-        
+        TotalPages = (ulong)Math.Ceiling(count / (double)pageSize);
+
         AddRange(items);
     }
 
-    public static Task<PagedList<T>> ToPagedList(List<T> source, int pageNumber, int pageSize)
+    public ulong CurrentPage { get; }
+    public ulong TotalPages { get; }
+    public ulong PageSize { get; }
+    public ulong TotalCount { get; }
+    public bool HasPrevious => CurrentPage > 1;
+    public bool HasNext => CurrentPage < TotalPages;
+
+    public static Task<PagedList<T>> ToPagedList(List<T> source, ulong pageNumber, ulong pageSize)
     {
         var count = source.Count;
-        var items = source.Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
+        var items = source.Skip((int)((pageNumber - 1) * pageSize))
+            .Take((int)pageSize)
             .ToList();
 
-        return Task.FromResult(new PagedList<T>(items, count, pageNumber, pageSize));
+        return Task.FromResult(new PagedList<T>(items, (ulong)count, pageNumber, pageSize));
     }
 }

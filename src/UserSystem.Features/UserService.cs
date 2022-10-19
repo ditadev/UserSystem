@@ -138,21 +138,25 @@ public class UserService : IUserService
         return true;
     }
 
-    public Task<User?> GetUserById(long id)
+    public Task<User?> GetUserById(ulong id)
     {
         return _dataContext.Users.Include(x => x.Roles).SingleOrDefaultAsync(u => u.Id == id);
     }
 
     public async Task<PagedList<User>> GetAllUsers(PageParameters pageParameters)
     {
-        return await PagedList<User>.ToPagedList(await _dataContext.Users
-            .Include(x => x.Roles)
-            .OrderBy(x => x.Id)
-            .ToListAsync(),pageParameters.PageNumber,pageParameters.PageSize);
+        var userList = await _dataContext.Users.Include(x => x.Roles).OrderBy(x => x.Id)
+            .ToListAsync();
+        return await PagedList<User>.ToPagedList(userList, pageParameters.PageNumber, pageParameters.PageSize);
     }
 
     public Task<User?> GetUserByEmailAddress(string emailAddress)
     {
         return _dataContext.Users.Include(x => x.Roles).SingleOrDefaultAsync(u => u.EmailAddress == emailAddress);
+    }
+
+    public async Task<User?> GetUserByPhoneNumber(string phoneNumber)
+    {
+        return await _dataContext.Users.Include(x => x.Roles).SingleOrDefaultAsync(x => x.PhoneNumber == phoneNumber);
     }
 }

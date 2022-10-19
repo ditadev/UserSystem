@@ -2,6 +2,7 @@ using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
 using UserSystem.Models;
+using UserSystem.Models.Helper;
 using MailKitSmtpClient = MailKit.Net.Smtp.SmtpClient;
 
 namespace UserSystem.Features;

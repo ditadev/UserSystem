@@ -1,5 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Reflection;
 using System.Text;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -8,6 +10,7 @@ using StackExchange.Redis;
 using UserService.Persistence;
 using UserSystem.Features;
 using UserSystem.Models;
+using UserSystem.Models.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = new ConfigurationBuilder()
@@ -18,6 +21,7 @@ var config = new ConfigurationBuilder()
 var appSettings = config.GetSection("AppSettings").Get<AppSettings>();
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
+builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 builder.Services.AddSingleton(appSettings);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -29,6 +33,7 @@ builder.Services.AddScoped<IUserService, UserSystem.Features.UserService>();
 builder.Services.AddSingleton<IEmailService, EmailService>();
 builder.Services.AddSwaggerGen(options =>
 {
+    options.UseAllOfToExtendReferenceSchemas();
     options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -84,5 +89,4 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
-app.Run();
+app.MapControllers();app.Run();

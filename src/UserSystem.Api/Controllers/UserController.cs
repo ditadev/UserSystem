@@ -9,8 +9,12 @@ using UserSystem.Models.Helper;
 
 namespace UserSystem.Api.Controllers;
 
-[Route("api/[controller]/[action]")]
+[Route("api/[controller]")]
 [ApiController]
+[ProducesResponseType(typeof(UserInputErrorResponseDto), 400)]
+[ProducesResponseType(typeof(UserNotAuthenticatedErrorResponseDto), 401)]
+[ProducesResponseType(typeof(UserNotPrivilegedResponseDto), 403)]
+[ProducesResponseType(typeof(ServerErrorResponseDto), 500)]
 [Authorize(UserRole.Default)]
 public class UserController : AbstractController
 {
@@ -23,13 +27,14 @@ public class UserController : AbstractController
 
     [HttpGet]
     [Authorize(UserRole.User)]
-    public async Task<ActionResult<UserDto>> Get()
+    [ProducesResponseType(typeof(UserResponseDto), 200)]
+    public async Task<ActionResult<UserResponseDto>> Get()
     {
         var userId = GetContextUserId();
         var user = await _userService.GetUserById(userId);
-    
-        if (user == null) return BadRequest("User Not Found :(");
-    
-        return Ok(new UserDto(AppFaultCode.Success,"Success",user));
+
+        if (user == null) return BadRequest(new UserInputErrorResponseDto("User Not Found :("));
+
+        return Ok(new UserResponseDto(user));
     }
 }

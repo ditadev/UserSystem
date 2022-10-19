@@ -4,8 +4,8 @@ namespace UserSystem.Api.Controllers;
 
 public abstract class AbstractController : ControllerBase
 {
-    protected long GetContextUserId()
+    protected ulong GetContextUserId()
     {
-        return long.Parse(HttpContext.User.Claims.First(i => i.Type == "sub").Value);
+        return ulong.Parse(HttpContext.User.Claims.First(i => i.Type == "sub").Value);
     }
 }
